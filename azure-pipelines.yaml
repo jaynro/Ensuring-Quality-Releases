@@ -4,70 +4,51 @@ variables:
   python.version: '3.7.6'
 stages:
 - stage: Provision
-  displayName: Provision Infraestructure
+  displayName: Provisioning
   jobs: 
-  - job: Provisionning
-    displayName: Provision azure Infraestructure
+  - job: ProvisioningAZInfra
+    displayName: Provisioning the Azure Infraestructure
     steps:
-    - task: DownloadSecureFile@1
-      name: tfvardef
-      displayName: Download terraform.tfvars
-      inputs:
-        secureFile: 'terraform.tfvars' 
-
-#Need to research
     - task: InstallSSHKey@0
       inputs:
-        knownHostsEntry: 'known_hosts'
-        sshPublicKey: $(PUBLIC_KEY)
+        knownHostsEntry: 'default'
         sshKeySecureFile: 'id_rsa'
-
-    - bash: |
-        cp $(Agent.TempDirectory)/terraform.tfvars $(System.DefaultWorkingDirectory)/terraform/environments/test
-      displayName: Copying terraform.tfvars
-
-    - bash: |
-        echo Workspace is at  $(Pipeline.Workspace)
-        echo tfvardef file is at $(tfvardef.secureFilePath)
-        cd $(Agent.TempDirectory)
-        pwd
-        ls -la
-        cat udacity_azure.pub
-        cd ~/.ssh/
-        pwd
-        ls -la
-        cat known_hosts
-        # $(System.DefaultWorkingDirectory) is equivalent to $(Build.SourcesDirectory)
-        cd $(System.DefaultWorkingDirectory)  
-        pwd
-        ls -la
-      displayName: Verifying the environment
-
-    - task: TerraformInstaller@0
-      displayName: Installing  Terraform
+    - task: Bash@3
       inputs:
-        terraformVersion: '0.13.5'
-
+        targetType: 'inline'
+        script: |
+          ls /home/vsts/work/_temp/
+    - task: TerraformInstaller@0
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: '0.13.4'
     - task: TerraformTaskV1@0
-      displayName: Initializing Terraform 
+      displayName: Terraform Init
       inputs:
         provider: 'azurerm'
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
         backendServiceArm: 'ServiceConnectionName'
-        backendAzureRmResourceGroupName: 'common-servoce-rg'
+        backendAzureRmResourceGroupName: 'common-service-rg'
         backendAzureRmStorageAccountName: 'jaynrostorage'
         backendAzureRmContainerName: 'jaynro-container'
         backendAzureRmKey: 'terraform.tfstate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
     - task: TerraformTaskV1@0
-      displayName: Terraform Apply
+      displayName: Terraform Plan
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        environmentServiceNameAzureRM: 'ServiceConnectionName'
+    - task: TerraformTaskV1@0
+      displayName: Terraform Validate and Apply  
       inputs:
         provider: 'azurerm'
         command: 'apply'
-        commandOptions: |
-          -auto-approve 
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceNameAzureRM: 'ServiceConnectionName'
+
+
 - stage: Build
   jobs:
   - job: Build
