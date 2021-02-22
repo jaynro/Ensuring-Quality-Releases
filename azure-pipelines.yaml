@@ -107,31 +107,22 @@ stages:
     displayName: Deploy FakeRestAPI
     pool:
       vmImage: 'ubuntu-18.04'
-    environment: 'TEST'
+    environment: 'Test'
     strategy:
       runOnce:
         deploy:
-- task: TerraformTaskV1@0
-  inputs:
-    provider: 'azurerm'
-    command: 'init'
-    backendServiceArm: 'Azure subscription 1 (09d9f2d9-084c-455a-a64f-9c03e7820800)'
-    backendAzureRmResourceGroupName: 'common-servoce-rg'
-    backendAzureRmStorageAccountName: 'jaynrostorage'
-    backendAzureRmContainerName: 'jaynro-container'
-    backendAzureRmKey: 'terraform.tfstate'
           steps:
           - task: AzureWebApp@1
             displayName: Deploy Azure WebApp
             inputs:
               azureSubscription: '09d9f2d9-084c-455a-a64f-9c03e7820800'
-              appName: 'jaynro-AppService'
+              appName: 'Jaynro-AppService'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-fakerestapi/fakerestapi-$(Build.BuildId).zip
               deploymentMethod: zipDeploy
 
   - deployment: deployment_vm
-    displayName: Deploy Virtual Machine
+    displayName: Deploying VM
     environment:
       name: 'TEST'
       resourceType: VirtualMachine
@@ -166,4 +157,12 @@ stages:
               AZURE_LOG_ANALYTICS_ID: $(AZURE_LOG_ANALYTICS_ID)
               AZURE_LOG_ANALYTICS_PRIMARY_KEY: $(AZURE_LOG_ANALYTICS_PRIMARY_KEY)
             displayName: Configuring selenium
+
+
+
+
+
+
+
+
 
