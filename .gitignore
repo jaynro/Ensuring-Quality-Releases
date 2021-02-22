@@ -1,1 +1,4 @@
-environments/test/.terraform/*
+.DS_Store
+terraform/.DS_Store
+terraform/environments/test/.terraform/
+

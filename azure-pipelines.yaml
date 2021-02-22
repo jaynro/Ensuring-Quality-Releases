@@ -115,8 +115,8 @@ stages:
           - task: AzureWebApp@1
             displayName: Deploy Azure WebApp
             inputs:
-              azureSubscription: 'azurerm-sc'
-              appName: 'lingchenzhu-webapi-AppService'
+              azureSubscription: '09d9f2d9-084c-455a-a64f-9c03e7820800'
+              appName: 'jaynro-AppService'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-fakerestapi/fakerestapi-$(Build.BuildId).zip
               deploymentMethod: zipDeploy
