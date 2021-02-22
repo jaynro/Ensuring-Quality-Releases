@@ -111,6 +111,15 @@ stages:
     strategy:
       runOnce:
         deploy:
+- task: TerraformTaskV1@0
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'Azure subscription 1 (09d9f2d9-084c-455a-a64f-9c03e7820800)'
+    backendAzureRmResourceGroupName: 'common-servoce-rg'
+    backendAzureRmStorageAccountName: 'jaynrostorage'
+    backendAzureRmContainerName: 'jaynro-container'
+    backendAzureRmKey: 'terraform.tfstate'
           steps:
           - task: AzureWebApp@1
             displayName: Deploy Azure WebApp
