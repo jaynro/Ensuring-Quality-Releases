@@ -99,7 +99,7 @@ stages:
           - task: AzureWebApp@1
             displayName: Deploy Azure WebApp
             inputs:
-              azureSubscription: '09d9f2d9-084c-455a-a64f-9c03e7820800'
+              azureSubscription: 'ServiceConnectionName'
               appName: 'Jaynro-AppService'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-fakerestapi/fakerestapi-$(Build.BuildId).zip
